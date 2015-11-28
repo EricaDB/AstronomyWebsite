@@ -28,8 +28,13 @@ function spill_data(req, res) {
 console.log("got into spill data");
 	var rows = con.query("SELECT * from employee;", function (err, rows) {
 	if (!err) {
-            console.log(rows);
-            res.json(rows);
+            var fnames = [];
+            for (var row in rows) {
+                console.log(rows[row]);
+                fnames.push(rows[row].fname); 
+            }
+            console.log(fnames);
+            res.json(fnames);
 	} else {
             console.log("query error");
 	} 

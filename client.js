@@ -1,6 +1,6 @@
 function test() {
     $("#test").text("so far so good");
-    $.get("test", {}, test_handler);
+    $.get("/test", {}, test_handler);
 }
 
 function test_handler(resp) {
