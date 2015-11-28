@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "express": "^4.10.6",
+    "jquery": "^2.1.4",
     "mysql": "^2.5.4"
   },
   "description": "project for our intro to databases class",

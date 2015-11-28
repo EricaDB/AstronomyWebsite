@@ -13,11 +13,26 @@ var con = mysql.createConnection({
     host:     "ix.cs.uoregon.edu",
     user:     "sberg",
     password: "7dell7",
-    database: "sakila.db"
+    database: "company",
+    port:     3821
 });
-var port = 3000;
+var port = 5791;
 
-//con.connect();
+con.connect();
 server.listen(port);
 
+app.get("/test", spill_data);
 app.use(express.static(__dirname));
+
+function spill_data(req, res) {
+console.log("got into spill data");
+	var rows = con.query("SELECT * from employee;", function (err, rows) {
+	if (!err) {
+            console.log(rows);
+            res.json(rows);
+	} else {
+            console.log("query error");
+	} 
+    });
+}
+
