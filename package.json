@@ -1,0 +1,20 @@
+{
+  "name": "astronomy_website",
+  "version": "1.0.0",
+  "description": "project for our intro to databases class",
+  "main": "client.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EricaJohnson/AstronomyWebsite.git"
+  },
+  "author": "Sage Berg, Erica Johnson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EricaJohnson/AstronomyWebsite/issues"
+  },
+  "homepage": "https://github.com/EricaJohnson/AstronomyWebsite#readme"
+}
