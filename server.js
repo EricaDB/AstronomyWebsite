@@ -24,6 +24,8 @@ server.listen(port);
 app.get("/test", spill_data);
 app.use(express.static(__dirname));
 
+console.log("working");
+
 function spill_data(req, res) {
 	console.log("got into spill data");
 	var rows = con.query("SELECT * from constellation;", function (err, rows) {
