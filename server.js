@@ -13,7 +13,7 @@ var con = mysql.createConnection({
     host:     "ix.cs.uoregon.edu",
     user:     "sberg",
     password: "7dell7",
-    database: "company",
+    database: "astronomy",
     port:     3821
 });
 var port = 5791;
@@ -25,16 +25,15 @@ app.get("/test", spill_data);
 app.use(express.static(__dirname));
 
 function spill_data(req, res) {
-console.log("got into spill data");
-	var rows = con.query("SELECT * from employee;", function (err, rows) {
+	console.log("got into spill data");
+	var rows = con.query("SELECT * from constellation;", function (err, rows) {
 	if (!err) {
-            var fnames = [];
+            var names = [];
             for (var row in rows) {
                 console.log(rows[row]);
-                fnames.push(rows[row].fname); 
+                names.push(rows[row].name); 
             }
-            console.log(fnames);
-            res.json(fnames);
+            res.json(names);
 	} else {
             console.log("query error");
 	} 
