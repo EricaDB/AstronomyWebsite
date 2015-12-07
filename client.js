@@ -6,7 +6,6 @@ function display_table_handler(resp) {
     document.getElementById("table").innerHTML = resp;
 }
 
-// TODO write function
 function get_timeline() {
     $.get("/timeline", {}, display_table_handler);
 }
