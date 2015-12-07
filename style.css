@@ -9,7 +9,7 @@ body {
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
-#buttons_div {
+#functionality_bar {
     background:black;
     float:left;
     padding:5px;
@@ -22,6 +22,12 @@ body {
     width:128px;
 }
 
+#search_box {
+    border-style:none;
+    float:left;
+    width:128px;
+}
+
 #main {
     width:100%;
     min-height:300px;
@@ -31,4 +37,10 @@ body {
 #table, th, td {
     border: 1px solid #ccbb99; 
     border-collapse: collapse;
+}
+
+#radio_buttons {
+    margin-bottom:10px;
+    width:128px;
+    font-size:80%;
 }

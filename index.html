@@ -9,92 +9,168 @@
     <body>
         <h1 class="visible">Astronomy Database</h1>
         <div id="main" style="background:rgba(0,0,0,0.5)"> 
-            <div id="buttons_div">
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('asteroid')">
-                        Asteroids
-                    </button>
+            <div id="functionality_bar">
+
+                <p>Tables</p>
+                <div id="buttons_div">
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('asteroid')">
+                            Asteroids
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('comet')">
+                            Comets
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('constellation')">
+                            Constellations
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('galaxy')">
+                            Galaxies
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('galaxy_group')">
+                            Galaxy Groups
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('moon')">
+                            Moons
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('nebula')">
+                            Nebulae
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('planet')">
+                            Planets
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('researcher')">
+                            Researchers
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('star')">
+                            Stars
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('star_cluster')">
+                            Star Clusters
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('supernova')">
+                            Supernovae
+                        </button>
+                    </div>
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_table('telescope')">
+                            Telescopes
+                        </button>
+                    </div>
                 </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('comet')">
-                        Comets
-                    </button>
+                
+                <p>Features</p>
+                <div id="features_div"> 
+
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_timeline()">
+                            Discovery Timeline
+                        </button>
+                    </div>
+
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_extremes()">
+                            Extremes
+                        </button>
+                    </div>
+
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_random_object()">
+                            Random Object
+                        </button>
+                    </div>
+
                 </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('constellation')">
-                        Constellations
-                    </button>
+
+                <p>Search</p>
+                <div id="search_div">
+
+                    <div id="radio_buttons">
+                        <div class="button_div">
+                            <input type="radio" 
+                                   name="search" 
+                                   value="search_entire_database"
+                                   checked="checked">
+                                   by name
+                            </input>
+                        </div>
+                        <div class="button_div">
+                            <input type="radio" 
+                                   name="search" 
+                                   value="search_entire_database">
+                                   by constellation
+                            </input>
+                        </div>
+                        <div class="button_div">
+                            <input type="radio" 
+                                   name="search" 
+                                   value="search_entire_database">
+                                   entire database
+                            </input>
+                        </div>
+
+                    </div>
+
+                    <div class="button_div">
+                        <input id="search_box" placeholder="enter search term">
+                        </input>
+                    </div>
+
+                    <div class="button_div">
+                        <button class="content_button"
+                            onclick="get_()">
+                            Search the universe!
+                        </button>
+                    </div>
+
                 </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('galaxy')">
-                        Galaxies
-                    </button>
-                </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('galaxy_group')">
-                        Galaxy Groups
-                    </button>
-                </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('moon')">
-                        Moons
-                    </button>
-                </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('nebula')">
-                        Nebulae
-                    </button>
-                </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('planet')">
-                        Planets
-                    </button>
-                </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('researcher')">
-                        Researchers
-                    </button>
-                </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('star')">
-                        Stars
-                    </button>
-                </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('star_cluster')">
-                        Star Clusters
-                    </button>
-                </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('supernova')">
-                        Supernovae
-                    </button>
-                </div>
-                <div class="button_div">
-                    <button class="content_button"
-                        onclick="get_table('telescope')">
-                        Telescopes
-                    </button>
-                </div>
-            </div>
+
+            </div> 
             <div id="display_field">
                 <table id="table"></table>
             </div>
         </div>
         <p class="visible">By Erica Johnson and Sage Berg</p>
-        <p class="visible">For University of Oregon CIS 451 (Database Processing)</p>
+        <p class="visible">
+            For University of Oregon CIS 451 (Database Processing)
+        </p>
         <p class="visible">Fall 2015</p>
     </body>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
