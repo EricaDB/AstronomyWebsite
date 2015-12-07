@@ -16,10 +16,15 @@ body {
 }
 
 .content_button {
+    margin:1px;
     background-color:#222222;
     border-style:none;
     color:#ccbb99;
     width:128px;
+}
+
+.content_button:hover {
+    background-color:#444444;
 }
 
 #search_box {
