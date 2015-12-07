@@ -1,10 +1,9 @@
-function test() {
-    $("#test").text("so far so good");
-    $.get("/test", {}, test_handler);
+function get_table(table) {
+    $.get("/table", {"table": table}, display_table_handler);
 }
 
-function test_handler(resp) {
-    $("#test").text(resp);
+function display_table_handler(resp) {
+    document.getElementById("table").innerHTML = resp;
 }
 
-$(document).ready(test);
+$(document).ready(get_table("constellation"));

@@ -22,23 +22,64 @@ con.connect();
 server.listen(port);
 
 app.get("/test", spill_data);
+app.get("/table", spill_data);
 app.use(express.static(__dirname));
 
 console.log("working");
 
 function spill_data(req, res) {
-	console.log("got into spill data");
-	var rows = con.query("SELECT * from constellation;", function (err, rows) {
-	if (!err) {
-            var names = [];
+    if (req.query.table === null) {
+        console.log("server got query with no table specified");
+        return; 
+    }
+
+    // using prepared statement to avoid SQL injection
+    var query = "SELECT * from (" + trim(con.escape(req.query.table)) + ");";
+	var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var rows_array = [];
             for (var row in rows) {
-                console.log(rows[row]);
-                names.push(rows[row].name); 
+                rows_array.push(rows[row]); 
             }
-            res.json(names);
-	} else {
+            var keys = Object.keys(rows[0]);
+            res.json(build_table(rows_array, keys));
+        } else {
             console.log("query error");
-	} 
+        } 
     });
 }
 
+function build_table(rows, keys) {
+    var table = "";
+
+    // add the header
+    table += "<tr>";
+    for (var i = 0; i < keys.length; i++) {
+        table += "<td>";
+        table += keys[i];
+        table += "</td>";
+    }
+    table += "</tr>";
+
+    // add the rows
+    for (i = 0; i < rows.length; i++) {
+        table += "<tr>";
+        for (var j = 0; j < keys.length; j++) {
+            table += "<td>";
+            table += rows[i][keys[j]];
+            table += "</td>";
+        }
+        table += "</tr>";
+    }
+
+    return table;
+}
+
+
+function trim(string) {
+    var trimmed_string = "";
+    for (var i = 1; i < string.length - 1; i++) {
+        trimmed_string += string[i]; 
+    }
+    return trimmed_string;
+}

@@ -2,13 +2,100 @@
 <html>
     <head>
         <title>Astronomy Database</title>
-        <link href="style.css" rel="stylesheet">
+        <!-- <link href="bootstrap/css/bootstrap.css" rel="stylesheet"> -->
+        <link href="style.css" rel="stylesheet"> 
         <link href="astronomy_pictures/telescope.png" rel="icon"> 
     </head>
     <body>
-        <h1>Astronomy Database</h1>
-        <p>By Erica Johnson and Sage Berg</p>
-        <p id="test"></p>
+        <h1 class="visible">Astronomy Database</h1>
+        <div id="main" style="background:rgba(0,0,0,0.5)"> 
+            <div id="buttons_div">
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('asteroid')">
+                        Asteroids
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('comet')">
+                        Comets
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('constellation')">
+                        Constellations
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('galaxy')">
+                        Galaxies
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('galaxy_group')">
+                        Galaxy Groups
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('moon')">
+                        Moons
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('nebula')">
+                        Nebulae
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('planet')">
+                        Planets
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('researcher')">
+                        Researchers
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('star')">
+                        Stars
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('star_cluster')">
+                        Star Clusters
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('supernova')">
+                        Supernovae
+                    </button>
+                </div>
+                <div class="button_div">
+                    <button class="content_button"
+                        onclick="get_table('telescope')">
+                        Telescopes
+                    </button>
+                </div>
+            </div>
+            <div id="display_field">
+                <table id="table"></table>
+            </div>
+        </div>
+        <p class="visible">By Erica Johnson and Sage Berg</p>
+        <p class="visible">For University of Oregon CIS 451 (Database Issues)</p>
+        <p class="visible">Fall 2015</p>
     </body>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="client.js"></script>
