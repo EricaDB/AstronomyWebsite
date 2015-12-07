@@ -1,4 +1,34 @@
 body {
+    margin:0;
     background-image:url(https://upload.wikimedia.org/wikipedia/commons/9/9e/Milky_Way_IR_Spitzer.jpg);
     color:white;
+    font-family: sans-serif;
+}
+
+.visible {
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+#buttons_div {
+    background:black;
+    float:left;
+    padding:5px;
+}
+
+.content_button {
+    background-color:#222222;
+    border-style:none;
+    color:#ccbb99;
+    width:128px;
+}
+
+#main {
+    width:100%;
+    min-height:300px;
+    background:black;
+}
+
+#table, th, td {
+    border: 1px solid #ccbb99; 
+    border-collapse: collapse;
 }
