@@ -18,15 +18,44 @@ var con = mysql.createConnection({
 });
 var port = 5791;
 
+var TABLES = [
+    "asteroid",
+    "comet",
+    "constellation",
+    "galaxy",
+    "galaxy_group",
+    "moon",
+    "nebula",
+    "planet",
+    "researcher",
+    "star",
+    "star_cluster",
+    "supernova",
+    "telescope",
+];
+
 con.connect();
 server.listen(port);
 
 app.get("/test", spill_data);
 app.get("/table", spill_data);
 app.get("/timeline", make_timeline);
+app.get("/random_object", get_random_object);
 app.use(express.static(__dirname));
 
 console.log("working");
+
+function random_int(n) {
+    return Math.floor(Math.random() * n);
+}
+
+function trim(string) {
+    var trimmed_string = "";
+    for (var i = 1; i < string.length - 1; i++) {
+        trimmed_string += string[i];
+    }
+    return trimmed_string;
+}
 
 function spill_data(req, res) {
     if (req.query.table === null) {
@@ -76,15 +105,6 @@ function build_table(rows, keys) {
     return table;
 }
 
-
-function trim(string) {
-    var trimmed_string = "";
-    for (var i = 1; i < string.length - 1; i++) {
-        trimmed_string += string[i];
-    }
-    return trimmed_string;
-}
-
 function make_timeline(req, res) {
     var query = "SELECT year_discovered, designation AS name " +
                 "FROM asteroid WHERE year_discovered IS NOT NULL " +
@@ -119,4 +139,38 @@ function make_timeline(req, res) {
             console.log("query error");
         }
     });
+}
+
+function get_random_object(req, res) {
+    var table = TABLES[random_int(TABLES.length)];
+    var query = "SELECT COUNT(*) AS count FROM " + table + ";";
+
+    var rows  = con.query(query, function (err, rows) {
+        if (!err) {
+            var id = random_int(rows[0].count) + 1; // + 1 since ids start at 1
+            var query = "SELECT * FROM " + table + " WHERE " + table +
+                        "_id = " + id;
+            var random_object = con.query(query, function (err, random_object) {
+                if (!err) {
+                    var keys = Object.keys(random_object[0]);
+                    var rows_array = build_rows_array(random_object);
+                    res.json(build_table(rows_array, keys));
+                } else {
+                    console.log("query error");
+                }
+            });
+
+        } else {
+            console.log("query error");
+        }
+    });
+
+}
+
+function build_rows_array(rows) {
+    var rows_array = [];
+    for (var row in rows) {
+        rows_array.push(rows[row]);
+    }
+    return rows_array; 
 }
