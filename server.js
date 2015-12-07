@@ -23,6 +23,7 @@ server.listen(port);
 
 app.get("/test", spill_data);
 app.get("/table", spill_data);
+app.get("/timeline", make_timeline);
 app.use(express.static(__dirname));
 
 console.log("working");
@@ -30,7 +31,7 @@ console.log("working");
 function spill_data(req, res) {
     if (req.query.table === null) {
         console.log("server got query with no table specified");
-        return; 
+        return;
     }
 
     // using prepared statement to avoid SQL injection
@@ -39,13 +40,13 @@ function spill_data(req, res) {
         if (!err) {
             var rows_array = [];
             for (var row in rows) {
-                rows_array.push(rows[row]); 
+                rows_array.push(rows[row]);
             }
             var keys = Object.keys(rows[0]);
             res.json(build_table(rows_array, keys));
         } else {
             console.log("query error");
-        } 
+        }
     });
 }
 
@@ -79,7 +80,43 @@ function build_table(rows, keys) {
 function trim(string) {
     var trimmed_string = "";
     for (var i = 1; i < string.length - 1; i++) {
-        trimmed_string += string[i]; 
+        trimmed_string += string[i];
     }
     return trimmed_string;
+}
+
+function make_timeline() {
+    var query = "SELECT year_discovered, designation AS name" +
+                "FROM asteroid WHERE year_discovered IS NOT NULL" +
+                "union all" +
+                "SELECT year_discovered, name" +
+                "FROM comet WHERE year_discovered IS NOT NULL" +
+                "union all" +
+                "SELECT year_discovered, name" +
+                "FROM galaxy WHERE year_discovered IS NOT NULL" +
+                "union all" +
+                "SELECT year_discovered, name" +
+                "FROM moon WHERE year_discovered IS NOT NULL" +
+                "union all" +
+                "SELECT year_discovered, name" +
+                "FROM nebula WHERE year_discovered IS NOT NULL" +
+                "union all" +
+                "SELECT year_discovered, name" +
+                "FROM planet WHERE year_discovered IS NOT NULL" +
+                "union all" +
+                "SELECT year_discovered, name" +
+                "FROM star WHERE year_discovered IS NOT NULL" +
+                "ORDER BY year_discovered;";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var rows_array = [];
+            for (var row in rows) {
+                rows_array.push(rows[row]);
+            }
+            var keys = ["Year", "Discovery"];
+            res.json(build_table(rows_array, keys));
+        } else {
+            console.log("query error");
+        }
+    });
 }
