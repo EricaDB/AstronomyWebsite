@@ -7,7 +7,7 @@ function display_table_handler(resp) {
 }
 
 // TODO write function
-function get_timeline(table) {
+function get_timeline() {
     $.get("/timeline", {}, display_table_handler);
 }
 

@@ -85,27 +85,27 @@ function trim(string) {
     return trimmed_string;
 }
 
-function make_timeline() {
-    var query = "SELECT year_discovered, designation AS name" +
-                "FROM asteroid WHERE year_discovered IS NOT NULL" +
-                "union all" +
-                "SELECT year_discovered, name" +
-                "FROM comet WHERE year_discovered IS NOT NULL" +
-                "union all" +
-                "SELECT year_discovered, name" +
-                "FROM galaxy WHERE year_discovered IS NOT NULL" +
-                "union all" +
-                "SELECT year_discovered, name" +
-                "FROM moon WHERE year_discovered IS NOT NULL" +
-                "union all" +
-                "SELECT year_discovered, name" +
-                "FROM nebula WHERE year_discovered IS NOT NULL" +
-                "union all" +
-                "SELECT year_discovered, name" +
-                "FROM planet WHERE year_discovered IS NOT NULL" +
-                "union all" +
-                "SELECT year_discovered, name" +
-                "FROM star WHERE year_discovered IS NOT NULL" +
+function make_timeline(req, res) {
+    var query = "SELECT year_discovered, designation AS name " +
+                "FROM asteroid WHERE year_discovered IS NOT NULL " +
+                "union all " +
+                "SELECT year_discovered, name " +
+                "FROM comet WHERE year_discovered IS NOT NULL " +
+                "union all " +
+                "SELECT year_discovered, name " +
+                "FROM galaxy WHERE year_discovered IS NOT NULL " +
+                "union all " +
+                "SELECT year_discovered, name " +
+                "FROM moon WHERE year_discovered IS NOT NULL " +
+                "union all " +
+                "SELECT year_discovered, name " +
+                "FROM nebula WHERE year_discovered IS NOT NULL " +
+                "union all " +
+                "SELECT year_discovered, name " +
+                "FROM planet WHERE year_discovered IS NOT NULL " +
+                "union all " +
+                "SELECT year_discovered, name " +
+                "FROM star WHERE year_discovered IS NOT NULL " +
                 "ORDER BY year_discovered;";
     var rows = con.query(query, function (err, rows) {
         if (!err) {
@@ -113,7 +113,7 @@ function make_timeline() {
             for (var row in rows) {
                 rows_array.push(rows[row]);
             }
-            var keys = ["Year", "Discovery"];
+            var keys = Object.keys(rows[0]);
             res.json(build_table(rows_array, keys));
         } else {
             console.log("query error");
