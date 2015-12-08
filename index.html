@@ -126,7 +126,7 @@
                         <div class="button_div">
                             <input type="radio"
                                    name="search"
-                                   value="search_entire_database"
+                                   value="search_by_name"
                                    checked="checked">
                                    by name
                             </input>
@@ -134,7 +134,7 @@
                         <div class="button_div">
                             <input type="radio"
                                    name="search"
-                                   value="search_entire_database">
+                                   value="search_by_constellation">
                                    by constellation
                             </input>
                         </div>
@@ -149,13 +149,13 @@
                     </div>
 
                     <div class="button_div">
-                        <input id="search_box" placeholder="enter search term">
+                        <input type="text" id="search_box" placeholder="enter search term">
                         </input>
                     </div>
 
                     <div class="button_div">
                         <button class="content_button"
-                            onclick="get_()">
+                            onclick="get_search_results()">
                             Search the universe!
                         </button>
                     </div>
