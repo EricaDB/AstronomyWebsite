@@ -41,7 +41,9 @@ app.get("/test", spill_data);
 app.get("/table", spill_data);
 app.get("/timeline", make_timeline);
 app.get("/random_object", get_random_object);
-app.get("/search", get_search_results);
+app.get("/search_by_constellation", search_by_constellation);
+app.get("/search_by_name", search_by_name);
+app.get("/search_entire_database", search_entire_database);
 app.use(express.static(__dirname));
 
 console.log("working");
@@ -68,10 +70,7 @@ function spill_data(req, res) {
     var query = "SELECT * from (" + trim(con.escape(req.query.table)) + ");";
 	var rows = con.query(query, function (err, rows) {
         if (!err) {
-            var rows_array = [];
-            for (var row in rows) {
-                rows_array.push(rows[row]);
-            }
+            var rows_array = build_rows_array(rows); 
             var keys = Object.keys(rows[0]);
             res.json(build_table(rows_array, keys));
         } else {
@@ -130,10 +129,7 @@ function make_timeline(req, res) {
                 "ORDER BY year_discovered;";
     var rows = con.query(query, function (err, rows) {
         if (!err) {
-            var rows_array = [];
-            for (var row in rows) {
-                rows_array.push(rows[row]);
-            }
+            var rows_array = build_rows_array(rows);
             var keys = Object.keys(rows[0]);
             res.json(build_table(rows_array, keys));
         } else {
@@ -167,52 +163,28 @@ function get_random_object(req, res) {
     });
 }
 
-function get_search_results(req, res) {
-    console.log(req.query);
-    var result;
-    switch(req.query.button) {
-        case "search_by_constellation":
-            if (req.query.input === "") {
-                res.json("");
-            } else {
-                res.json(search_by_constellation(req.query.input));
-            }
-            break;
-        case "search_by_name":
-            result = search_by_name(req.query.input);
-            break;
-        case "search_entire_database":
-            result = search_entire_database(req.query.input);
-            break;
-        default:
-            result = "";
-    }
-}
-
-function search_by_constellation(con_name) {
+function search_by_constellation(req, res) {
     // using prepared statement to avoid SQL injection
     var constellation_query = "SELECT * FROM constellation WHERE name LIKE '" +
-                               trim(con.escape(con_name)) + "';";
+                               trim(con.escape(req.query.input)) + "';";
     var con_table;
     var con_rows = con.query(constellation_query, function (err, rows) {
        if (!err) {
            var con_rows_array = build_rows_array(rows);
            var keys = Object.keys(rows[0]);
            var con_table = build_table(con_rows_array, keys);
-           console.log(con_table);
-           return con_table;
+           res.json(con_table);
        } else {
            console.log("query error");
-           return "";
        }
     });
 }
 
-function search_by_name(name) {
+function search_by_name(req, res) {
     return "";
 }
 
-function search_entire_database(string) {
+function search_entire_database(req, res) {
     return "";
 }
 
