@@ -339,6 +339,9 @@ function search_entire_database_recursive(res, index, term, html) {
                         // intentionally using == for type coercion
                         if (rows_array[i][keys[j]] == term) {
                             match_list.push(rows_array[i]);
+                            break; // prevents duplicate entries 
+                                   //   with the search term
+                                   //   in multiple columns
                         }
                     }
                 }
