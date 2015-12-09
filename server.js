@@ -41,6 +41,7 @@ server.listen(port);
 app.get("/table", spill_data);
 app.get("/timeline", make_timeline);
 app.get("/random_object", get_random_object);
+app.get("/extremes", get_extremes);
 app.get("/images", make_images);
 app.get("/planets_to_stars", get_planets_to_stars);
 app.get("/researchers", objects_by_discoverer);
@@ -162,6 +163,10 @@ function make_timeline(req, res) {
             report_query_error(res);
         }
     });
+}
+
+function get_extremes(req, res) {
+    console.log("route working");
 }
 
 function get_random_object(req, res) {
@@ -305,24 +310,24 @@ function search_by_constellation(req, res) {
     var constellation_query =
         "SELECT c.name AS constellation, g.name As objects_in_constellation " +
         "FROM constellation c JOIN galaxy g USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "UNION ALL " +
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" UNION ALL " +
         "SELECT c.name AS constellation, n.name As objects_in_constellation " +
         "FROM constellation c JOIN nebula n USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "UNION ALL " +
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" UNION ALL " +
         "SELECT c.name AS constellation, s.name As objects_in_constellation " +
         "FROM constellation c JOIN star s USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "UNION ALL " +
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" UNION ALL " +
         "SELECT c.name AS constellation, sc.name As objects_in_constellation " +
         "FROM constellation c JOIN star_cluster sc USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "UNION ALL " +
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" UNION ALL " +
         "SELECT c.name AS constellation, sn.name As objects_in_constellation " +
         "FROM constellation c JOIN supernova sn USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "ORDER BY constellation;";
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" ORDER BY constellation;";
 
     var con_table;
     var con_rows = con.query(constellation_query, function (err, rows) {
@@ -348,8 +353,8 @@ function search_by_name(req, res) {
 function search_by_name_recursive(res, index, name, html) {
     var field = define_field(TABLES[index]);
     var query =
-        "SELECT * FROM " + TABLES[index] + " WHERE " + field + " LIKE " +
-        con.escape(name) + ";";
+        "SELECT * FROM " + TABLES[index] + " WHERE " + field + " REGEXP " +
+        "\"^.*" + trim(con.escape(name)) + ".*$\";";
     var rows = con.query(query, function (err, rows) {
         if (!err) {
             // if the query produced a result add the result to the html output
