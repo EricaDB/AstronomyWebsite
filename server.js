@@ -61,12 +61,42 @@ function build_rows_array(rows) {
     return rows_array;
 }
 
+function build_table(rows, keys) {
+    var table = "";
+    // add the header
+    table += "<tr>";
+    for (var i = 0; i < keys.length; i++) {
+        table += "<td>";
+        table += keys[i];
+        table += "</td>";
+    }
+    table += "</tr>";
+    // add the rows
+    for (i = 0; i < rows.length; i++) {
+        table += "<tr>";
+        for (var j = 0; j < keys.length; j++) {
+            table += "<td>";
+            table += rows[i][keys[j]];
+            table += "</td>";
+        }
+        table += "</tr>";
+    }
+    return table;
+}
+
 function define_field(table_name) {
     if (table_name === "asteroid") {
         return "designation";
     } else {
         return "name";
     }
+}
+
+function insert_table_break(html) {
+    if (html !== "") {
+        html += "<td class=\"table_break\">break</td>";
+    }
+    return html;
 }
 
 function random_int(n) {
@@ -104,32 +134,6 @@ function spill_data(req, res) {
             report_query_error(res);
         }
     });
-}
-
-function build_table(rows, keys) {
-    var table = "";
-
-    // add the header
-    table += "<tr>";
-    for (var i = 0; i < keys.length; i++) {
-        table += "<td>";
-        table += keys[i];
-        table += "</td>";
-    }
-    table += "</tr>";
-
-    // add the rows
-    for (i = 0; i < rows.length; i++) {
-        table += "<tr>";
-        for (var j = 0; j < keys.length; j++) {
-            table += "<td>";
-            table += rows[i][keys[j]];
-            table += "</td>";
-        }
-        table += "</tr>";
-    }
-
-    return table;
 }
 
 function make_timeline(req, res) {
@@ -362,6 +366,7 @@ function search_by_name_recursive(res, index, name, html) {
                 var rows_array = build_rows_array(rows);
                 var keys = Object.keys(rows[0]);
                 var table = build_table(rows_array, keys);
+                html = insert_table_break(html);
                 html += table;
             }
             if (index < TABLES.length - 1) {
@@ -403,9 +408,7 @@ function search_entire_database_recursive(res, index, term, html) {
                     }
                 }
                 if (match_list.length > 0) {
-                    if (html !== "") {
-                        html += "<td class=\"table_break\"> </td>";
-                    }
+                    html = insert_table_break(html);
                     var table = build_table(match_list, keys);
                     html += table;
                 }
