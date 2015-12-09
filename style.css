@@ -42,7 +42,7 @@ body {
 
 #table, th, td {
     border: 1px solid #ccbb99;
-    border-collapse: collapse;
+    border-collapse:collapse;
 }
 
 #radio_buttons {
@@ -52,5 +52,10 @@ body {
 }
 
 a:link {
-    color:#ccbb99
+    color:#ccbb99;
+}
+
+a:visited {
+    color:#ccbb99;
+    text-decoration:none;
 }
