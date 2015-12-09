@@ -38,11 +38,11 @@ var TABLES = [
 con.connect();
 server.listen(port);
 
-app.get("/test", spill_data);
 app.get("/table", spill_data);
 app.get("/timeline", make_timeline);
 app.get("/random_object", get_random_object);
 app.get("/images", make_images);
+app.get("/planets_to_stars", get_planets_to_stars);
 app.get("/search_by_constellation", search_by_constellation);
 app.get("/search_by_name", search_by_name);
 app.get("/search_entire_database", search_entire_database);
@@ -182,6 +182,22 @@ function get_random_object(req, res) {
                 }
             });
 
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_planets_to_stars(req, res) {
+    var query = "SELECT p.name AS planet, s.name AS star " +
+        "FROM star s JOIN star_orbitted so USING(star_id) " +
+        "JOIN planet p USING(planet_id);";
+
+    var rows  = con.query(query, function (err, rows) {
+        if (!err) {
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            res.json(build_table(rows_array, keys));
         } else {
             report_query_error(res);
         }

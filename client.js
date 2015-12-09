@@ -14,6 +14,10 @@ function get_images() {
     $.get("/images", {}, display_table_handler);
 }
 
+function get_planets_to_stars() {
+    $.get("/planets_to_stars", {}, display_table_handler);
+}
+
 function get_random_object() {
     $.get("/random_object", {}, display_table_handler);
 }
