@@ -189,42 +189,6 @@ function get_random_object(req, res) {
 }
 
 function make_images(req, res) {
-    // var query = "SELECT designation AS name, picture_id " +
-    //             "FROM asteroid WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM comet WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM constellation WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM galaxy WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM galaxy_group WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM moon WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM nebula WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM planet WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM researcher WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM star WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM star_cluster WHERE picture_id IS NOT NULL " +
-    //             "union all " +
-    //             "SELECT name, picture_id " +
-    //             "FROM telescope WHERE picture_id IS NOT NULL " +
-    //             "ORDER BY name; "
     var query = "SELECT name, path " +
                 "FROM picture AS pictures JOIN " +
                     "(SELECT designation AS name, picture_id " +
@@ -264,19 +228,17 @@ function make_images(req, res) {
                 	"FROM telescope WHERE picture_id IS NOT NULL) " +
                 "AS objects USING(picture_id) " +
                 "ORDER BY name;";
-    // var images_body = "<h3>Images in the Database:</h3><br>";
     var images_body = "";
     var rows = con.query(query, function (err, rows) {
         if (!err) {
-            // var rows_array = build_rows_array(rows);
-            var keys = Object.keys(rows[0]);
-            // console.log(rows);
-            var curr_path = "";
             for (var i = 0; i < rows.length; i++) {
-                curr_path = rows[i].path;
-                rows[i].path = "<img src=\"" + curr_path +"\">";
+                rows[i].image = "<div id=\"image\" width=500px style=\"background:rgba(0,0,0,0.5)\"><img src=\"" + rows[i].path + "\" " +
+                    "style=\"background-color:white; max-width:500px; margin:10px;\"></div>";
+                delete rows[i].path;
+                rows[i].name = "<div style=\"max-width:150px\">" + rows[i].name
+                    + "</div>";
             }
-            // console.log(rows);
+            var keys = Object.keys(rows[0]);
             images_body += build_table(rows, keys);
             res.json(images_body);
         } else {
