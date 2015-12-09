@@ -382,6 +382,9 @@ function search_entire_database_recursive(res, index, term, html) {
                     }
                 }
                 if (match_list.length > 0) {
+                    if (html !== "") {
+                        html += "<td class=\"table_break\"> </td>";
+                    }
                     var table = build_table(match_list, keys);
                     html += table;
                 }

@@ -1,6 +1,5 @@
 body {
     margin:0;
-    /*background-image:url(https://upload.wikimedia.org/wikipedia/commons/9/9e/Milky_Way_IR_Spitzer.jpg);*/
     background-image:url(astronomy_pictures/milky_way.jpg);
     color:white;
     font-family: sans-serif;
@@ -43,6 +42,15 @@ body {
 #table, th, td {
     border: 1px solid #ccbb99;
     border-collapse:collapse;
+}
+
+.table_break {
+    color:rgba(0,0,0,0.5);
+    border-collapse:collapse;
+    border-bottom: 1px solid #ccbb99;
+    border-left: 1px solid rgba(0,0,0,0.5);
+    border-right: 1px solid rgba(0,0,0,0.5);
+    border-top: 1px solid rgba(0,0,0,0.5);
 }
 
 #radio_buttons {
