@@ -10,6 +10,10 @@ function get_timeline() {
     $.get("/timeline", {}, display_table_handler);
 }
 
+function get_extremes() {
+    $.get("/extremes", {}, display_table_handler);
+}
+
 function get_images() {
     $.get("/images", {}, display_table_handler);
 }
