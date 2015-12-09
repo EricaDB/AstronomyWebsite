@@ -14,6 +14,10 @@ function get_images() {
     $.get("/images", {}, display_table_handler);
 }
 
+function get_objects_by_researcher() {
+    $.get("/researchers", {}, display_table_handler);
+}
+
 function get_random_object() {
     $.get("/random_object", {}, display_table_handler);
 }
