@@ -10,6 +10,10 @@ function get_timeline() {
     $.get("/timeline", {}, display_table_handler);
 }
 
+function get_images() {
+    $.get("/images", {}, display_table_handler);
+}
+
 function get_search_results() {
     var button = $('input[name="search"]:checked').val();
     var input = $('#search_box').val();

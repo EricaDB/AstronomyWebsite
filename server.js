@@ -41,6 +41,7 @@ app.get("/test", spill_data);
 app.get("/table", spill_data);
 app.get("/timeline", make_timeline);
 app.get("/random_object", get_random_object);
+app.get("/images", make_images);
 app.get("/search_by_constellation", search_by_constellation);
 app.get("/search_by_name", search_by_name);
 app.get("/search_entire_database", search_entire_database);
@@ -70,7 +71,7 @@ function spill_data(req, res) {
     var query = "SELECT * from (" + trim(con.escape(req.query.table)) + ");";
 	var rows = con.query(query, function (err, rows) {
         if (!err) {
-            var rows_array = build_rows_array(rows); 
+            var rows_array = build_rows_array(rows);
             var keys = Object.keys(rows[0]);
             res.json(build_table(rows_array, keys));
         } else {
@@ -161,6 +162,57 @@ function get_random_object(req, res) {
             console.log("query error");
         }
     });
+}
+
+function make_images(req, res) {
+    var query = "SELECT designation AS name, picture_id " +
+                "FROM asteroid WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM comet WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM constellation WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM galaxy WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM galaxy_group WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM moon WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM nebula WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM planet WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM researcher WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM star WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM star_cluster WHERE picture_id IS NOT NULL " +
+                "union all " +
+                "SELECT name, picture_id " +
+                "FROM telescope WHERE picture_id IS NOT NULL " +
+                "ORDER BY name; "
+    var images_body = "<p>Images in Database:</p><br>";
+    var rows = con.query(query, function (err, rows) {
+       if (!err) {
+           var rows_array = build_rows_array(rows);
+           var keys = Object.keys(rows[0]);
+           images_body += build_table(rows_array, keys);
+           res.json(images_body);
+       } else {
+           console.log("query error");
+       }
+    });
+    // res.json("<h3>Images</h3>");
 }
 
 function search_by_constellation(req, res) {
