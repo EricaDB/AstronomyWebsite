@@ -49,8 +49,22 @@ app.use(express.static(__dirname));
 
 console.log("working");
 
+// helper functions
+function build_rows_array(rows) {
+    var rows_array = [];
+    for (var row in rows) {
+        rows_array.push(rows[row]);
+    }
+    return rows_array;
+}
+
 function random_int(n) {
     return Math.floor(Math.random() * n);
+}
+
+function report_query_error(res) {
+    console.log("query error");
+    res.json("<td>query error</td>");
 }
 
 function trim(string) {
@@ -61,6 +75,7 @@ function trim(string) {
     return trimmed_string;
 }
 
+// main functions 
 function spill_data(req, res) {
     if (req.query.table === null) {
         console.log("server got query with no table specified");
@@ -75,7 +90,7 @@ function spill_data(req, res) {
             var keys = Object.keys(rows[0]);
             res.json(build_table(rows_array, keys));
         } else {
-            console.log("query error");
+            report_query_error(res);
         }
     });
 }
@@ -134,7 +149,7 @@ function make_timeline(req, res) {
             var keys = Object.keys(rows[0]);
             res.json(build_table(rows_array, keys));
         } else {
-            console.log("query error");
+            report_query_error(res);
         }
     });
 }
@@ -154,12 +169,12 @@ function get_random_object(req, res) {
                     var rows_array = build_rows_array(random_object);
                     res.json(build_table(rows_array, keys));
                 } else {
-                    console.log("query error");
+                    report_query_error(res);
                 }
             });
 
         } else {
-            console.log("query error");
+            report_query_error(res);
         }
     });
 }
@@ -200,7 +215,7 @@ function make_images(req, res) {
                 "union all " +
                 "SELECT name, picture_id " +
                 "FROM telescope WHERE picture_id IS NOT NULL " +
-                "ORDER BY name; "
+                "ORDER BY name; ";
     var images_body = "<p>Images in Database:</p><br>";
     var rows = con.query(query, function (err, rows) {
        if (!err) {
@@ -251,7 +266,7 @@ function search_by_constellation(req, res) {
                res.json("<td>search produced no results</td>");
            }
        } else {
-           console.log("query error");
+           report_query_error(res);
        }
     });
 }
@@ -262,12 +277,4 @@ function search_by_name(req, res) {
 
 function search_entire_database(req, res) {
     return "";
-}
-
-function build_rows_array(rows) {
-    var rows_array = [];
-    for (var row in rows) {
-        rows_array.push(rows[row]);
-    }
-    return rows_array;
 }
