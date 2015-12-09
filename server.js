@@ -259,10 +259,16 @@ function make_images(req, res) {
     var images_body = "";
     var rows = con.query(query, function (err, rows) {
         if (!err) {
-            var rows_array = build_rows_array(rows);
+            // var rows_array = build_rows_array(rows);
             var keys = Object.keys(rows[0]);
-            // console.log(rows_array);
-            images_body += build_table(rows_array, keys);
+            // console.log(rows);
+            var curr_path = "";
+            for (var i = 0; i < rows.length; i++) {
+                curr_path = rows[i].path;
+                rows[i].path = "<img src=\"" + curr_path +"\">";
+            }
+            // console.log(rows);
+            images_body += build_table(rows, keys);
             res.json(images_body);
         } else {
             console.log("query error");
