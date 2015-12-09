@@ -164,16 +164,40 @@ function get_random_object(req, res) {
 }
 
 function search_by_constellation(req, res) {
-    // using prepared statement to avoid SQL injection
-    var constellation_query = "SELECT * FROM constellation WHERE name LIKE '" +
-                               trim(con.escape(req.query.input)) + "';";
+    // using prepared statements to avoid SQL injection
+    var constellation_query = 
+        "SELECT c.name AS constellation, g.name As objects_in_constellation " +
+        "FROM constellation c JOIN galaxy g USING(constellation_id) " +
+        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
+        "UNION ALL " +
+        "SELECT c.name AS constellation, n.name As objects_in_constellation " +
+        "FROM constellation c JOIN nebula n USING(constellation_id) " +
+        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
+        "UNION ALL " +
+        "SELECT c.name AS constellation, s.name As objects_in_constellation " +
+        "FROM constellation c JOIN star s USING(constellation_id) " +
+        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
+        "UNION ALL " +
+        "SELECT c.name AS constellation, sc.name As objects_in_constellation " +
+        "FROM constellation c JOIN star_cluster sc USING(constellation_id) " +
+        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
+        "UNION ALL " +
+        "SELECT c.name AS constellation, sn.name As objects_in_constellation " +
+        "FROM constellation c JOIN supernova sn USING(constellation_id) " +
+        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
+        "ORDER BY constellation;";
+        
     var con_table;
     var con_rows = con.query(constellation_query, function (err, rows) {
        if (!err) {
            var con_rows_array = build_rows_array(rows);
-           var keys = Object.keys(rows[0]);
-           var con_table = build_table(con_rows_array, keys);
-           res.json(con_table);
+           if (rows.length > 0) {
+               var keys = Object.keys(rows[0]);
+               var con_table = build_table(con_rows_array, keys);
+               res.json(con_table);
+           } else {
+               res.json("<td>search produced no results</td>");
+           }
        } else {
            console.log("query error");
        }
