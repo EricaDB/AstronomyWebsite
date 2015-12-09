@@ -14,6 +14,10 @@ function get_images() {
     $.get("/images", {}, display_table_handler);
 }
 
+function get_objects_by_researcher() {
+    $.get("/researchers", {}, display_table_handler);
+}
+
 function get_planets_to_stars() {
     $.get("/planets_to_stars", {}, display_table_handler);
 }

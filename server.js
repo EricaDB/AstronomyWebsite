@@ -43,6 +43,7 @@ app.get("/timeline", make_timeline);
 app.get("/random_object", get_random_object);
 app.get("/images", make_images);
 app.get("/planets_to_stars", get_planets_to_stars);
+app.get("/researchers", objects_by_discoverer);
 app.get("/search_by_constellation", search_by_constellation);
 app.get("/search_by_name", search_by_name);
 app.get("/search_entire_database", search_entire_database);
@@ -264,6 +265,41 @@ function make_images(req, res) {
     });
 }
 
+function objects_by_discoverer(req, res) {
+    var query = "SELECT r.researcher_id, r.name, nationality, o.name AS object " +
+                "FROM researcher AS r JOIN " +
+                    "(SELECT designation AS name, researcher_id " +
+                	"FROM asteroid WHERE researcher_id IS NOT NULL " +
+                		"union all " +
+                	"SELECT name, researcher_id " +
+                	"FROM comet WHERE researcher_id IS NOT NULL " +
+                		"union all " +
+                	"SELECT name, researcher_id " +
+                	"FROM galaxy WHERE researcher_id IS NOT NULL " +
+                		"union all " +
+                	"SELECT name, researcher_id " +
+                	"FROM moon WHERE researcher_id IS NOT NULL " +
+                		"union all " +
+                	"SELECT name, researcher_id " +
+                	"FROM nebula WHERE researcher_id IS NOT NULL " +
+                		"union all " +
+                	"SELECT name, researcher_id " +
+                	"FROM planet WHERE researcher_id IS NOT NULL " +
+                		"union all " +
+                	"SELECT name, researcher_id " +
+                	"FROM star WHERE researcher_id IS NOT NULL) " +
+                "AS o ON  r.researcher_id = o.researcher_id " +
+                "ORDER BY r.name;";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var keys = Object.keys(rows[0]);
+            res.json(build_table(rows, keys));
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
 function search_by_constellation(req, res) {
     // using prepared statements to avoid SQL injection
     var constellation_query =
@@ -311,8 +347,8 @@ function search_by_name(req, res) {
 
 function search_by_name_recursive(res, index, name, html) {
     var field = define_field(TABLES[index]);
-    var query = 
-        "SELECT * FROM " + TABLES[index] + " WHERE " + field + " LIKE " + 
+    var query =
+        "SELECT * FROM " + TABLES[index] + " WHERE " + field + " LIKE " +
         con.escape(name) + ";";
     var rows = con.query(query, function (err, rows) {
         if (!err) {
@@ -322,9 +358,9 @@ function search_by_name_recursive(res, index, name, html) {
                 var keys = Object.keys(rows[0]);
                 var table = build_table(rows_array, keys);
                 html += table;
-            } 
+            }
             if (index < TABLES.length - 1) {
-                search_by_name_recursive(res, index + 1, name, html); 
+                search_by_name_recursive(res, index + 1, name, html);
             } else if (html.length > 0) {
                 res.json(html);
             } else {
@@ -355,7 +391,7 @@ function search_entire_database_recursive(res, index, term, html) {
                         // intentionally using == for type coercion
                         if (rows_array[i][keys[j]] == term) {
                             match_list.push(rows_array[i]);
-                            break; // prevents duplicate entries 
+                            break; // prevents duplicate entries
                                    //   with the search term
                                    //   in multiple columns
                         }
@@ -368,9 +404,9 @@ function search_entire_database_recursive(res, index, term, html) {
                     var table = build_table(match_list, keys);
                     html += table;
                 }
-            } 
+            }
             if (index < TABLES.length - 1) {
-                search_entire_database_recursive(res, index + 1, term, html); 
+                search_entire_database_recursive(res, index + 1, term, html);
             } else if (html.length > 0) {
                 res.json(html);
             } else {
@@ -382,4 +418,3 @@ function search_entire_database_recursive(res, index, term, html) {
         }
     });
 }
-
