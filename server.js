@@ -223,8 +223,9 @@ function make_images(req, res) {
     var rows = con.query(query, function (err, rows) {
         if (!err) {
             for (var i = 0; i < rows.length; i++) {
-                rows[i].image = "<div id=\"image\" width=500px style=\"background:rgba(0,0,0,0.5)\"><img src=\"" + rows[i].path + "\" " +
-                    "style=\"background-color:white; max-width:500px; margin:10px;\"></div>";
+                rows[i].image = "<div width=500px style=" +
+                    "\"background:rgba(0,0,0,0.5)\"><img id=\"image\" src=\"" +
+                    rows[i].path + "\" ></div>";
                 delete rows[i].path;
                 rows[i].name = "<div style=\"max-width:150px\">" + rows[i].name
                     + "</div>";

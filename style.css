@@ -59,3 +59,9 @@ a:visited {
     color:#ccbb99;
     text-decoration:none;
 }
+
+#image {
+    background-color:white;
+    max-width:500px;
+    margin:10px;
+}
