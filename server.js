@@ -18,6 +18,7 @@ var con = mysql.createConnection({
 });
 var port = 5791;
 
+// tables that have a "name" attribute
 var TABLES = [
     "asteroid",
     "comet",
@@ -56,6 +57,14 @@ function build_rows_array(rows) {
         rows_array.push(rows[row]);
     }
     return rows_array;
+}
+
+function define_field(table_name) {
+    if (table_name === "asteroid") {
+        return "designation";
+    } else {
+        return "name";
+    }
 }
 
 function random_int(n) {
@@ -302,23 +311,54 @@ function search_by_constellation(req, res) {
 
     var con_table;
     var con_rows = con.query(constellation_query, function (err, rows) {
-       if (!err) {
-           var con_rows_array = build_rows_array(rows);
-           if (rows.length > 0) {
-               var keys = Object.keys(rows[0]);
-               var con_table = build_table(con_rows_array, keys);
-               res.json(con_table);
-           } else {
-               res.json("<td>search produced no results</td>");
-           }
-       } else {
-           report_query_error(res);
-       }
+        if (!err) {
+            var con_rows_array = build_rows_array(rows);
+            if (rows.length > 0) {
+                var keys = Object.keys(rows[0]);
+                var con_table = build_table(con_rows_array, keys);
+                res.json(con_table);
+            } else {
+                res.json("<td>search produced no results</td>");
+            }
+        } else {
+            report_query_error(res);
+        }
     });
 }
 
 function search_by_name(req, res) {
-    return "";
+    search_by_name_recursive(res, 0, req.query.input, "");
+}
+
+function search_by_name_recursive(res, index, name, html) {
+    
+    var field = define_field(TABLES[index]);
+
+    var query = 
+        "SELECT * FROM " + TABLES[index] + " WHERE " + field + " LIKE " + 
+        con.escape(name) + ";";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            // if the query produced a result add the result to the html output
+            if (rows.length > 0) {
+                var rows_array = build_rows_array(rows);
+                var keys = Object.keys(rows[0]);
+                var table = build_table(rows_array, keys);
+                html += table;
+            } 
+           
+            if (index < TABLES.length - 1) {
+                search_by_name_recursive(res, index + 1, name, html); 
+            } else if (html.length > 0) {
+                res.json(html);
+            } else {
+                res.json("<td>search produced no results</td>");
+            }
+        } else {
+            console.log(err);
+            report_query_error(res);
+        }
+    });
 }
 
 function search_entire_database(req, res) {
