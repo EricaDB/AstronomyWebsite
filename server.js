@@ -294,9 +294,7 @@ function search_by_name(req, res) {
 }
 
 function search_by_name_recursive(res, index, name, html) {
-    
     var field = define_field(TABLES[index]);
-
     var query = 
         "SELECT * FROM " + TABLES[index] + " WHERE " + field + " LIKE " + 
         con.escape(name) + ";";
@@ -309,7 +307,6 @@ function search_by_name_recursive(res, index, name, html) {
                 var table = build_table(rows_array, keys);
                 html += table;
             } 
-           
             if (index < TABLES.length - 1) {
                 search_by_name_recursive(res, index + 1, name, html); 
             } else if (html.length > 0) {
@@ -325,5 +322,42 @@ function search_by_name_recursive(res, index, name, html) {
 }
 
 function search_entire_database(req, res) {
-    return "";
+    search_entire_database_recursive(res, 0, req.query.input, "");
 }
+
+function search_entire_database_recursive(res, index, term, html) {
+    var field = define_field(TABLES[index]);
+    var query = "SELECT * FROM " + TABLES[index];
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            if (rows.length > 0) {
+                var rows_array = build_rows_array(rows);
+                var keys = Object.keys(rows[0]);
+                var match_list = [];
+                for (var i = 0; i < rows_array.length; i++) {
+                    for (var j = 0; j < keys.length; j++) {
+                        // intentionally using == for type coercion
+                        if (rows_array[i][keys[j]] == term) {
+                            match_list.push(rows_array[i]);
+                        }
+                    }
+                }
+                if (match_list.length > 0) {
+                    var table = build_table(match_list, keys);
+                    html += table;
+                }
+            } 
+            if (index < TABLES.length - 1) {
+                search_entire_database_recursive(res, index + 1, term, html); 
+            } else if (html.length > 0) {
+                res.json(html);
+            } else {
+                res.json("<td>search produced no results</td>");
+            }
+        } else {
+            console.log(err);
+            report_query_error(res);
+        }
+    });
+}
+
