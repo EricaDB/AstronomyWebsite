@@ -38,11 +38,12 @@ var TABLES = [
 con.connect();
 server.listen(port);
 
-app.get("/test", spill_data);
 app.get("/table", spill_data);
 app.get("/timeline", make_timeline);
 app.get("/random_object", get_random_object);
+app.get("/extremes", get_extremes);
 app.get("/images", make_images);
+app.get("/planets_to_stars", get_planets_to_stars);
 app.get("/researchers", objects_by_discoverer);
 app.get("/insert_planet", insert_planet);
 app.get("/search_by_constellation", search_by_constellation);
@@ -61,12 +62,42 @@ function build_rows_array(rows) {
     return rows_array;
 }
 
+function build_table(rows, keys) {
+    var table = "";
+    // add the header
+    table += "<tr>";
+    for (var i = 0; i < keys.length; i++) {
+        table += "<td>";
+        table += keys[i];
+        table += "</td>";
+    }
+    table += "</tr>";
+    // add the rows
+    for (i = 0; i < rows.length; i++) {
+        table += "<tr>";
+        for (var j = 0; j < keys.length; j++) {
+            table += "<td>";
+            table += rows[i][keys[j]];
+            table += "</td>";
+        }
+        table += "</tr>";
+    }
+    return table;
+}
+
 function define_field(table_name) {
     if (table_name === "asteroid") {
         return "designation";
     } else {
         return "name";
     }
+}
+
+function insert_table_break(html) {
+    if (html !== "") {
+        html += "<td class=\"table_break\">break</td>";
+    }
+    return html;
 }
 
 function random_int(n) {
@@ -106,32 +137,6 @@ function spill_data(req, res) {
     });
 }
 
-function build_table(rows, keys) {
-    var table = "";
-
-    // add the header
-    table += "<tr>";
-    for (var i = 0; i < keys.length; i++) {
-        table += "<td>";
-        table += keys[i];
-        table += "</td>";
-    }
-    table += "</tr>";
-
-    // add the rows
-    for (i = 0; i < rows.length; i++) {
-        table += "<tr>";
-        for (var j = 0; j < keys.length; j++) {
-            table += "<td>";
-            table += rows[i][keys[j]];
-            table += "</td>";
-        }
-        table += "</tr>";
-    }
-
-    return table;
-}
-
 function make_timeline(req, res) {
     var query = "SELECT year_discovered, designation AS name " +
                 "FROM asteroid WHERE year_discovered IS NOT NULL " +
@@ -165,6 +170,10 @@ function make_timeline(req, res) {
     });
 }
 
+function get_extremes(req, res) {
+    console.log("route working");
+}
+
 function get_random_object(req, res) {
     var table = TABLES[random_int(TABLES.length)];
     var query = "SELECT COUNT(*) AS count FROM " + table + ";";
@@ -184,6 +193,22 @@ function get_random_object(req, res) {
                 }
             });
 
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_planets_to_stars(req, res) {
+    var query = "SELECT p.name AS planet, s.name AS star " +
+        "FROM star s JOIN star_orbitted so USING(star_id) " +
+        "JOIN planet p USING(planet_id);";
+
+    var rows  = con.query(query, function (err, rows) {
+        if (!err) {
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            res.json(build_table(rows_array, keys));
         } else {
             report_query_error(res);
         }
@@ -322,24 +347,24 @@ function search_by_constellation(req, res) {
     var constellation_query =
         "SELECT c.name AS constellation, g.name As objects_in_constellation " +
         "FROM constellation c JOIN galaxy g USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "UNION ALL " +
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" UNION ALL " +
         "SELECT c.name AS constellation, n.name As objects_in_constellation " +
         "FROM constellation c JOIN nebula n USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "UNION ALL " +
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" UNION ALL " +
         "SELECT c.name AS constellation, s.name As objects_in_constellation " +
         "FROM constellation c JOIN star s USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "UNION ALL " +
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" UNION ALL " +
         "SELECT c.name AS constellation, sc.name As objects_in_constellation " +
         "FROM constellation c JOIN star_cluster sc USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "UNION ALL " +
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" UNION ALL " +
         "SELECT c.name AS constellation, sn.name As objects_in_constellation " +
         "FROM constellation c JOIN supernova sn USING(constellation_id) " +
-        "WHERE c.name LIKE " + con.escape(req.query.input) + " " +
-        "ORDER BY constellation;";
+        "WHERE c.name REGEXP \"^.*" + trim(con.escape(req.query.input)) +
+        ".*$\" ORDER BY constellation;";
 
     var con_table;
     var con_rows = con.query(constellation_query, function (err, rows) {
@@ -365,8 +390,8 @@ function search_by_name(req, res) {
 function search_by_name_recursive(res, index, name, html) {
     var field = define_field(TABLES[index]);
     var query =
-        "SELECT * FROM " + TABLES[index] + " WHERE " + field + " LIKE " +
-        con.escape(name) + ";";
+        "SELECT * FROM " + TABLES[index] + " WHERE " + field + " REGEXP " +
+        "\"^.*" + trim(con.escape(name)) + ".*$\";";
     var rows = con.query(query, function (err, rows) {
         if (!err) {
             // if the query produced a result add the result to the html output
@@ -374,6 +399,7 @@ function search_by_name_recursive(res, index, name, html) {
                 var rows_array = build_rows_array(rows);
                 var keys = Object.keys(rows[0]);
                 var table = build_table(rows_array, keys);
+                html = insert_table_break(html);
                 html += table;
             }
             if (index < TABLES.length - 1) {
@@ -415,9 +441,7 @@ function search_entire_database_recursive(res, index, term, html) {
                     }
                 }
                 if (match_list.length > 0) {
-                    if (html !== "") {
-                        html += "<td class=\"table_break\"> </td>";
-                    }
+                    html = insert_table_break(html);
                     var table = build_table(match_list, keys);
                     html += table;
                 }
