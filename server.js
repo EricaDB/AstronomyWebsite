@@ -54,6 +54,7 @@ app.get("/images", make_images);
 app.get("/images", make_images);
 app.get("/planets_to_stars", get_planets_to_stars);
 app.get("/researchers", objects_by_discoverer);
+app.get("/insert_planet", insert_planet);
 app.get("/search_by_constellation", search_by_constellation);
 app.get("/search_by_name", search_by_name);
 app.get("/search_entire_database", search_entire_database);
@@ -280,7 +281,7 @@ function make_images(req, res) {
 }
 
 function objects_by_discoverer(req, res) {
-    var query = "SELECT r.researcher_id, r.name, nationality, o.name AS object " +
+    var query = "SELECT r.researcher_id, r.name AS researcher_name, nationality, o.name AS object_discovered " +
                 "FROM researcher AS r JOIN " +
                     "(SELECT designation AS name, researcher_id " +
                 	"FROM asteroid WHERE researcher_id IS NOT NULL " +
@@ -310,6 +311,38 @@ function objects_by_discoverer(req, res) {
             res.json(build_table(rows, keys));
         } else {
             report_query_error(res);
+        }
+    });
+}
+
+function insert_planet(req, res) {
+    // console.log(req.query.name + req.query.star + req.query.orbital_period + req.query.researcher + req.query.year_discovered + req.query.mass_earth_units);
+    var star_query = "SELECT EXISTS(SELECT name FROM star WHERE name LIKE '"
+                     + req.query.star + "');";
+    var r_query = "SELECT EXISTS(SELECT name FROM researcher WHERE name LIKE '"
+                      + req.query.researcher + "');";
+    var star_rows = con.query(star_query, function (err, star_rows) {
+        if (!err) {
+            var star_keys = Object.keys(star_rows[0]);
+            if (star_rows[0][star_keys[0]] == 1) {
+                console.log('true');
+                // TO CHECK IF RESEARCHER IS IN DB:
+                // var r_rows = con.query(r_query, function (err, r_rows) {
+                //     if (!err) {
+                //         var r_keys = Object.keys(r_rows[0]);
+                //         if (r_rows[0][r_keys[0]] == 1) {
+                //             // INSERT INTO DATABASE
+                //             console.log("researcher and star in DB");
+                //         }
+                //     } else {
+                //         // report_query_error(res);
+                //         console.log("query error");
+                //     }
+                // });
+            }
+        } else {
+            // report_query_error(res);
+            console.log("query error");
         }
     });
 }
