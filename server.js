@@ -276,7 +276,7 @@ function make_images(req, res) {
 }
 
 function objects_by_discoverer(req, res) {
-    var query = "SELECT r.researcher_id, r.name, nationality, o.name AS object " +
+    var query = "SELECT r.researcher_id, r.name AS researcher_name, nationality, o.name AS object_discovered " +
                 "FROM researcher AS r JOIN " +
                     "(SELECT designation AS name, researcher_id " +
                 	"FROM asteroid WHERE researcher_id IS NOT NULL " +
