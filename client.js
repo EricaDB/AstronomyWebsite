@@ -2,6 +2,10 @@ function display_table_handler(resp) {
     document.getElementById("table").innerHTML = resp;
 }
 
+function display_append_handler(resp) {
+    document.getElementById("table").innerHTML += resp;
+}
+
 function get_table(table) {
     $.get("/table", {"table": table}, display_table_handler);
 }
@@ -11,7 +15,16 @@ function get_timeline() {
 }
 
 function get_extremes() {
-    $.get("/extremes", {}, display_table_handler);
+    document.getElementById("table").innerHTML = "";
+    $.get("/largest_star", {}, display_append_handler);
+    $.get("/smallest_star", {}, display_append_handler);
+    $.get("/brightest_star_cluster", {}, display_append_handler);
+    $.get("/most_faint_star_cluster", {}, display_append_handler);
+    $.get("/oldest_star_cluster", {}, display_append_handler);
+    $.get("/newest_star_cluster", {}, display_append_handler);
+    $.get("/planet_max_period", {}, display_append_handler);
+    $.get("/planet_min_period", {}, display_append_handler);
+    $.get("/farthest_from_earth", {}, display_append_handler);
 }
 
 function get_images() {

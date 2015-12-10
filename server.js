@@ -41,7 +41,16 @@ server.listen(port);
 app.get("/table", spill_data);
 app.get("/timeline", make_timeline);
 app.get("/random_object", get_random_object);
-app.get("/extremes", get_extremes);
+app.get("/largest_star", get_largest_star);
+app.get("/smallest_star", get_smallest_star);
+app.get("/farthest_from_earth", get_farthest_from_earth);
+app.get("/brightest_star_cluster", get_brightest_star_cluster);
+app.get("/most_faint_star_cluster", get_most_faint_star_cluster);
+app.get("/oldest_star_cluster", get_oldest_star_cluster);
+app.get("/newest_star_cluster", get_newest_star_cluster);
+app.get("/planet_max_period", get_planet_max_period);
+app.get("/planet_min_period", get_planet_min_period);
+app.get("/images", make_images);
 app.get("/images", make_images);
 app.get("/planets_to_stars", get_planets_to_stars);
 app.get("/researchers", objects_by_discoverer);
@@ -170,15 +179,11 @@ function make_timeline(req, res) {
     });
 }
 
-function get_extremes(req, res) {
-    console.log("route working");
-}
-
 function get_random_object(req, res) {
     var table = TABLES[random_int(TABLES.length)];
     var query = "SELECT COUNT(*) AS count FROM " + table + ";";
 
-    var rows  = con.query(query, function (err, rows) {
+    var rows = con.query(query, function (err, rows) {
         if (!err) {
             var id = random_int(rows[0].count) + 1; // + 1 since ids start at 1
             var query = "SELECT * FROM " + table + " WHERE " + table +
@@ -204,7 +209,7 @@ function get_planets_to_stars(req, res) {
         "FROM star s JOIN star_orbitted so USING(star_id) " +
         "JOIN planet p USING(planet_id);";
 
-    var rows  = con.query(query, function (err, rows) {
+    var rows = con.query(query, function (err, rows) {
         if (!err) {
             var keys = Object.keys(rows[0]);
             var rows_array = build_rows_array(rows);
@@ -263,8 +268,8 @@ function make_images(req, res) {
                     "\"background:rgba(0,0,0,0.5)\"><img id=\"image\" src=\"" +
                     rows[i].path + "\" ></div>";
                 delete rows[i].path;
-                rows[i].name = "<div style=\"max-width:150px\">" + rows[i].name
-                    + "</div>";
+                rows[i].name = "<div style=\"max-width:150px\">" + rows[i].name +
+                    "</div>";
             }
             var keys = Object.keys(rows[0]);
             images_body += build_table(rows, keys);
@@ -311,35 +316,85 @@ function objects_by_discoverer(req, res) {
 }
 
 function insert_planet(req, res) {
-    // console.log(req.query.name + req.query.star + req.query.orbital_period + req.query.researcher + req.query.year_discovered + req.query.mass_earth_units);
-    var star_query = "SELECT EXISTS(SELECT name FROM star WHERE name LIKE '"
-                     + req.query.star + "');";
-    var r_query = "SELECT EXISTS(SELECT name FROM researcher WHERE name LIKE '"
-                      + req.query.researcher + "');";
+    var star_query = 
+        "SELECT EXISTS(SELECT name FROM star WHERE name LIKE " +
+        con.escape(req.query.star) + ");";
     var star_rows = con.query(star_query, function (err, star_rows) {
         if (!err) {
             var star_keys = Object.keys(star_rows[0]);
-            if (star_rows[0][star_keys[0]] == 1) {
-                console.log('true');
+            if (star_rows[0][star_keys[0]] === 1) {
+                var researcher_query =
+                    "SELECT EXISTS(SELECT name FROM researcher WHERE name " +
+                    "LIKE " + con.escape(req.query.researcher) + ");";
                 // TO CHECK IF RESEARCHER IS IN DB:
-                // var r_rows = con.query(r_query, function (err, r_rows) {
-                //     if (!err) {
-                //         var r_keys = Object.keys(r_rows[0]);
-                //         if (r_rows[0][r_keys[0]] == 1) {
-                //             // INSERT INTO DATABASE
-                //             console.log("researcher and star in DB");
-                //         }
-                //     } else {
-                //         // report_query_error(res);
-                //         console.log("query error");
-                //     }
-                // });
+                var r_rows = 
+                    con.query(researcher_query, function (err, r_rows) {
+                    if (!err) {
+                        var r_keys = Object.keys(r_rows[0]);
+                        if (r_rows[0][r_keys[0]] === 1) {
+                             // INSERT INTO DATABASE
+                            insert_max_planet_id(req, res);
+                        }
+                    } else {
+                        report_query_error(res);
+                    }
+                });
             }
         } else {
-            // report_query_error(res);
-            console.log("query error");
+            report_query_error(res);
         }
     });
+}
+
+function insert_max_planet_id(req, res) {
+    var max_id_query = "SELECT MAX(planet_id) AS id FROM planet;";
+    con.query(max_id_query, function (err, rows) {
+        if (!err) {
+            var planet_id = rows[0].id + 1; 
+            insert_researcher_id(req, res, planet_id);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function insert_researcher_id(req, res, planet_id) {
+    var res_id_query =
+        "SELECT researcher_id AS id FROM researcher WHERE name LIKE " +
+        con.escape(req.query.researcher) + ";";
+    con.query(res_id_query, function (err, rows) {
+        if (!err) {
+            var researcher_id = rows[0].id;
+            var planet_query = 
+                "INSERT INTO planet " +
+                "(`planet_id`, `name`, `orbital_period_d`, `researcher_id`, " +
+                "`year_discovered`, `mass_earth_units`, `picture_id`) " +
+                "VALUES " + "('" +
+                planet_id + "', '" + 
+                trim(con.escape(req.query.name)) + "', '" +
+                parseFloat(trim(con.escape(req.query.orbital_period))).toFixed(3) + "', '" +
+                researcher_id + "', '" +
+                trim(con.escape(req.query.year_discovered)) + "', '" +
+                parseFloat(trim(con.escape(req.query.mass_earth_units))).toFixed(2) +
+                "', 'null');";
+            console.log(planet_query);
+            finally_insert_planet(res, planet_query);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function finally_insert_planet(res, planet_query) {
+    con.query(planet_query, function (err, rows) {
+        if (!err) {
+            console.log("planet inserted");
+        } else {
+            console.log(err);
+            console.log("planet not inserted");
+        }
+    });
+    
 }
 
 function search_by_constellation(req, res) {
@@ -455,6 +510,165 @@ function search_entire_database_recursive(res, index, term, html) {
             }
         } else {
             console.log(err);
+            report_query_error(res);
+        }
+    });
+}
+
+function get_largest_star(req, res) {
+    var query = "SELECT * FROM star WHERE solar_mass IN " +
+        "(SELECT MAX(solar_mass) AS solar_mass FROM star);";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var html = "<td class=\"extreme_header\">Largest Star</td>";
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            html += build_table(rows_array, keys);
+            res.json(html);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_smallest_star(req, res) {
+    var query = "SELECT * FROM star WHERE solar_mass IN " +
+        "(SELECT MIN(solar_mass) AS solar_mass FROM star);";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var html = "<td class=\"extreme_header\">Smallest Star</td>";
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            html += build_table(rows_array, keys);
+            res.json(html);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_brightest_star_cluster(req, res) {
+    var query = "SELECT * FROM star_cluster WHERE brightness IN " +
+        "(SELECT MAX(brightness) AS brightness FROM star_cluster);";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var html = "<td class=\"extreme_header\">Brightest Star Cluster</td>";
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            html += build_table(rows_array, keys);
+            res.json(html);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_most_faint_star_cluster(req, res) {
+    var query = "SELECT * FROM star_cluster WHERE brightness IN " +
+        "(SELECT MIN(brightness) AS brightness FROM star_cluster);";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var html =
+                "<td class=\"extreme_header\">Dimmest Star Cluster</td>";
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            html += build_table(rows_array, keys);
+            res.json(html);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_oldest_star_cluster(req, res) {
+    var query = "SELECT * FROM star_cluster WHERE age_my IN " +
+        "(SELECT MAX(age_my) AS age_my FROM star_cluster);";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var html = "<td class=\"extreme_header\">Oldest Star Cluster</td>";
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            html += build_table(rows_array, keys);
+            res.json(html);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_newest_star_cluster(req, res) {
+    var query = "SELECT * FROM star_cluster WHERE age_my IN " +
+        "(SELECT MIN(age_my) AS age_my FROM star_cluster);";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var html =
+                "<td class=\"extreme_header\">Youngest Star Cluster</td>";
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            html += build_table(rows_array, keys);
+            res.json(html);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_planet_max_period(req, res) {
+    var query = "SELECT * FROM planet WHERE orbital_period_d IN " +
+        "(SELECT MAX(orbital_period_d) AS orbital_period_d FROM planet);";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var html =
+                "<td class=\"extreme_header\">Longest Orbital Period</td>";
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            html += build_table(rows_array, keys);
+            res.json(html);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_planet_min_period(req, res) {
+    var query = "SELECT * FROM planet WHERE orbital_period_d IN " +
+        "(SELECT MIN(orbital_period_d) AS orbital_period_d FROM planet);";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var html =
+                "<td class=\"extreme_header\">Shortest Orbital Period</td>";
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            html += build_table(rows_array, keys);
+            res.json(html);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function get_farthest_from_earth(req, res) {
+    var query = 
+        "SELECT name, distance_ly FROM star UNION ALL " +
+        "SELECT name, distance_ly FROM galaxy_group UNION ALL " +
+        "SELECT name, distance_ly FROM supernova " +
+        "WHERE distance_ly IN " +
+        "(SELECT MAX(distance_ly) AS distance_ly FROM " +
+        " (SELECT name, distance_ly FROM star " +
+        "  UNION ALL " +
+        "  SELECT name, distance_ly FROM galaxy_group " +
+        "  UNION ALL " +
+        "  SELECT name, distance_ly FROM supernova) as distances) " +
+        "ORDER BY distance_ly DESC LIMIT 1;";
+    var rows = con.query(query, function (err, rows) {
+        if (!err) {
+            var html =
+                "<td class=\"extreme_header\">Farthest from Earth</td>";
+            var keys = Object.keys(rows[0]);
+            var rows_array = build_rows_array(rows);
+            html += build_table(rows_array, keys);
+            res.json(html);
+        } else {
             report_query_error(res);
         }
     });
