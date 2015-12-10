@@ -316,35 +316,85 @@ function objects_by_discoverer(req, res) {
 }
 
 function insert_planet(req, res) {
-    // console.log(req.query.name + req.query.star + req.query.orbital_period + req.query.researcher + req.query.year_discovered + req.query.mass_earth_units);
-    var star_query = "SELECT EXISTS(SELECT name FROM star WHERE name LIKE '"
-                     + req.query.star + "');";
-    var r_query = "SELECT EXISTS(SELECT name FROM researcher WHERE name LIKE '"
-                      + req.query.researcher + "');";
+    var star_query = 
+        "SELECT EXISTS(SELECT name FROM star WHERE name LIKE " +
+        con.escape(req.query.star) + ");";
     var star_rows = con.query(star_query, function (err, star_rows) {
         if (!err) {
             var star_keys = Object.keys(star_rows[0]);
-            if (star_rows[0][star_keys[0]] == 1) {
-                console.log('true');
+            if (star_rows[0][star_keys[0]] === 1) {
+                var researcher_query =
+                    "SELECT EXISTS(SELECT name FROM researcher WHERE name " +
+                    "LIKE " + con.escape(req.query.researcher) + ");";
                 // TO CHECK IF RESEARCHER IS IN DB:
-                // var r_rows = con.query(r_query, function (err, r_rows) {
-                //     if (!err) {
-                //         var r_keys = Object.keys(r_rows[0]);
-                //         if (r_rows[0][r_keys[0]] == 1) {
-                //             // INSERT INTO DATABASE
-                //             console.log("researcher and star in DB");
-                //         }
-                //     } else {
-                //         // report_query_error(res);
-                //         console.log("query error");
-                //     }
-                // });
+                var r_rows = 
+                    con.query(researcher_query, function (err, r_rows) {
+                    if (!err) {
+                        var r_keys = Object.keys(r_rows[0]);
+                        if (r_rows[0][r_keys[0]] === 1) {
+                             // INSERT INTO DATABASE
+                            insert_max_planet_id(req, res);
+                        }
+                    } else {
+                        report_query_error(res);
+                    }
+                });
             }
         } else {
-            // report_query_error(res);
-            console.log("query error");
+            report_query_error(res);
         }
     });
+}
+
+function insert_max_planet_id(req, res) {
+    var max_id_query = "SELECT MAX(planet_id) AS id FROM planet;";
+    con.query(max_id_query, function (err, rows) {
+        if (!err) {
+            var planet_id = rows[0].id + 1; 
+            insert_researcher_id(req, res, planet_id);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function insert_researcher_id(req, res, planet_id) {
+    var res_id_query =
+        "SELECT researcher_id AS id FROM researcher WHERE name LIKE " +
+        con.escape(req.query.researcher) + ";";
+    con.query(res_id_query, function (err, rows) {
+        if (!err) {
+            var researcher_id = rows[0].id;
+            var planet_query = 
+                "INSERT INTO planet " +
+                "(`planet_id`, `name`, `orbital_period_d`, `researcher_id`, " +
+                "`year_discovered`, `mass_earth_units`, `picture_id`) " +
+                "VALUES " + "('" +
+                planet_id + "', '" + 
+                trim(con.escape(req.query.name)) + "', '" +
+                parseFloat(trim(con.escape(req.query.orbital_period))).toFixed(3) + "', '" +
+                researcher_id + "', '" +
+                trim(con.escape(req.query.year_discovered)) + "', '" +
+                parseFloat(trim(con.escape(req.query.mass_earth_units))).toFixed(2) +
+                "', 'null');";
+            console.log(planet_query);
+            finally_insert_planet(res, planet_query);
+        } else {
+            report_query_error(res);
+        }
+    });
+}
+
+function finally_insert_planet(res, planet_query) {
+    con.query(planet_query, function (err, rows) {
+        if (!err) {
+            console.log("planet inserted");
+        } else {
+            console.log(err);
+            console.log("planet not inserted");
+        }
+    });
+    
 }
 
 function search_by_constellation(req, res) {
