@@ -61,7 +61,7 @@ CREATE TABLE `comet` (
   `orbital_period_y` decimal(8,2) DEFAULT NULL,
   `last_appearance` int(11) DEFAULT NULL,
   `next_appearance` int(11) DEFAULT NULL,
-  `visible_naked_eye` tinyint(1) DEFAULT NULL,
+  `naked_eye` tinyint(1) DEFAULT NULL,
   `picture_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`comet_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -73,7 +73,7 @@ CREATE TABLE `comet` (
 
 LOCK TABLES `comet` WRITE;
 /*!40000 ALTER TABLE `comet` DISABLE KEYS */;
-INSERT INTO `comet` (`comet_id`, `designation`, `name`, `researcher_id`, `year_discovered`, `orbital_period_y`, `last_appearance`, `next_appearance`, `visible_naked_eye`, `picture_id`) VALUES (1,'1P/Halley','Halley\'s Comet',6,1705,75.30,1986,2061,1,3),(2,'C/1906 V1','Thiele',7,1906,110.00,1906,2021,0,NULL),(3,'C/1917 F1','Mellish',8,1917,145.00,1917,2062,0,NULL),(4,'P/1997 B1','Kobayashi',9,1997,25.17,1997,2022,0,NULL),(5,'C/2001 OG108','LONEOS',1,2001,48.50,2002,2050,0,NULL),(6,'C/1942 EA','Vaisala',2,1942,85.40,1942,2027,0,NULL),(7,'C/1680 V1','Great Comet of 1680',3,1680,9400.00,1680,11080,1,4),(8,'C/2000 S3','LONEOS',1,2000,39.97,2000,2040,0,NULL),(9,'C/2007 S2','Lemmon',4,2007,44.45,2008,2053,0,NULL),(10,'C/2014 W11','PANSTARRS',5,2014,106000.00,2013,108014,0,NULL),(11,'C/2011 L4','PANSTARRS',5,2011,30.75,2015,2036,0,NULL);
+INSERT INTO `comet` (`comet_id`, `designation`, `name`, `researcher_id`, `year_discovered`, `orbital_period_y`, `last_appearance`, `next_appearance`, `naked_eye`, `picture_id`) VALUES (1,'1P/Halley','Halley\'s Comet',6,1705,75.30,1986,2061,1,3),(2,'C/1906 V1','Thiele',7,1906,110.00,1906,2021,0,NULL),(3,'C/1917 F1','Mellish',8,1917,145.00,1917,2062,0,NULL),(4,'P/1997 B1','Kobayashi',9,1997,25.17,1997,2022,0,NULL),(5,'C/2001 OG108','LONEOS',1,2001,48.50,2002,2050,0,NULL),(6,'C/1942 EA','Vaisala',2,1942,85.40,1942,2027,0,NULL),(7,'C/1680 V1','Great Comet of 1680',3,1680,9400.00,1680,11080,1,4),(8,'C/2000 S3','LONEOS',1,2000,39.97,2000,2040,0,NULL),(9,'C/2007 S2','Lemmon',4,2007,44.45,2008,2053,0,NULL),(10,'C/2014 W11','PANSTARRS',5,2014,106000.00,2013,108014,0,NULL),(11,'C/2011 L4','PANSTARRS',5,2011,30.75,2015,2036,0,NULL);
 /*!40000 ALTER TABLE `comet` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -142,12 +142,12 @@ DROP TABLE IF EXISTS `galaxy_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `galaxy_group` (
-  `group_id` int(11) NOT NULL,
+  `galaxy_group_id` int(11) NOT NULL DEFAULT '0',
   `name` varchar(32) DEFAULT NULL,
   `distance_ly` double DEFAULT NULL,
   `naked_eye` tinyint(1) DEFAULT NULL,
   `picture_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`group_id`)
+  PRIMARY KEY (`galaxy_group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -157,7 +157,7 @@ CREATE TABLE `galaxy_group` (
 
 LOCK TABLES `galaxy_group` WRITE;
 /*!40000 ALTER TABLE `galaxy_group` DISABLE KEYS */;
-INSERT INTO `galaxy_group` (`group_id`, `name`, `distance_ly`, `naked_eye`, `picture_id`) VALUES (1,'Local Group',NULL,1,99),(2,'M81 Group',11400000,1,100),(3,'M94 Group',13000000,0,NULL),(4,'Centaurus A Group',11900000,1,101),(5,'Sculptor Group',12700000,0,NULL),(6,'BoRG 58',13100000000,0,102);
+INSERT INTO `galaxy_group` (`galaxy_group_id`, `name`, `distance_ly`, `naked_eye`, `picture_id`) VALUES (1,'Local Group',NULL,1,99),(2,'M81 Group',11400000,1,100),(3,'M94 Group',13000000,0,NULL),(4,'Centaurus A Group',11900000,1,101),(5,'Sculptor Group',12700000,0,NULL),(6,'BoRG 58',13100000000,0,102);
 /*!40000 ALTER TABLE `galaxy_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -340,7 +340,7 @@ DROP TABLE IF EXISTS `star_cluster`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `star_cluster` (
-  `cluster_id` int(11) NOT NULL,
+  `star_cluster_id` int(11) NOT NULL DEFAULT '0',
   `name` varchar(64) DEFAULT NULL,
   `constellation_id` int(11) DEFAULT NULL,
   `distance_ly` decimal(16,6) DEFAULT NULL,
@@ -350,7 +350,7 @@ CREATE TABLE `star_cluster` (
   `cluster_type` varchar(8) DEFAULT NULL,
   `galaxy_id` int(11) DEFAULT NULL,
   `picture_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`cluster_id`)
+  PRIMARY KEY (`star_cluster_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -360,7 +360,7 @@ CREATE TABLE `star_cluster` (
 
 LOCK TABLES `star_cluster` WRITE;
 /*!40000 ALTER TABLE `star_cluster` DISABLE KEYS */;
-INSERT INTO `star_cluster` (`cluster_id`, `name`, `constellation_id`, `distance_ly`, `age_my`, `diameter_ly`, `brightness`, `cluster_type`, `galaxy_id`, `picture_id`) VALUES (1,'Hyades',11,150.031760,625,330.00,0.50,'open',1,173),(2,'Coma',16,293.540400,400,120.00,1.80,'open',1,174),(3,'Butterfly (M 6)',10,1588.379720,94,20.00,4.20,'open',1,175),(4,'Messier 7',10,913.236800,224,80.00,3.30,'open',1,176),(5,'Wild Duck (M 11)',64,6197.000000,250,13.00,5.80,'open',1,177),(6,'Eagle Nebula (M 16)',65,5871.000000,1,6.00,6.00,'open',1,178),(7,'Messier 18',9,4227.000000,17,5.00,6.90,'open',1,179),(8,'Messier 21',9,3930.000000,12,14.00,5.90,'open',1,180),(9,'Messier 23',9,2048.259680,300,30.00,5.50,'open',1,NULL),(10,'Messier 24',9,10013.000000,220,90.00,4.60,'open',1,NULL),(11,'Messier 25',9,2022.167200,92,30.00,4.60,'open',1,NULL),(12,'Messier 26',64,5218.000000,85,7.00,8.00,'open',1,NULL),(13,'Messier 34',30,1627.518440,180,36.00,5.20,'open',1,181),(14,'Messier 35',5,2974.542720,180,25.00,5.00,'open',1,182),(15,'Messier 36',24,4338.000000,25,10.00,6.00,'open',1,183),(16,'Messier 37',24,4566.000000,347,14.00,5.60,'open',1,184),(17,'Messier 38',24,4566.000000,316,20.00,6.40,'open',1,185),(18,'Messier 39',57,1014.345160,280,30.00,4.60,'open',1,186),(19,'Messier 41',32,2315.707600,240,40.00,4.50,'open',1,187),(20,'Beehive (M 44)',3,521.849600,830,70.00,3.10,'open',1,188),(21,'Pleiades (M 45)',11,440.310600,125,120.00,1.20,'open',1,189),(22,'Messier 46',75,4925.000000,250,20.00,6.10,'open',1,190),(23,'Messier 47',75,1598.164400,73,25.00,4.40,'open',1,191),(24,'Messier 48',59,2511.401200,400,30.00,5.80,'open',1,192),(25,'Messier 50',35,3262.000000,130,14.00,5.90,'open',1,193),(26,'Messier 52',25,4566.000000,160,15.00,6.90,'open',1,194),(27,'Messier 67',3,2961.496480,4000,25.00,6.90,'open',1,195),(28,'Messier 93',75,3382.237720,390,10.00,6.20,'open',1,196),(29,'Messier 103',25,9785.000000,16,5.00,7.40,'open',1,197),(30,'Southern Pleiades (IC 2602)',69,479.449320,30,100.00,1.90,'open',1,198),(31,'IC 2391 (Omicron Velorum Cluster)',77,482.710880,30,60.00,2.50,'open',1,NULL),(32,'NGC 2451 A',75,616.434840,50,45.00,2.80,'open',1,199),(33,'Alpha Persei',30,652.312000,50,300.00,1.20,'open',1,200),(34,'Blanco 1',48,825.174680,100,90.00,4.50,'open',1,NULL),(35,'NGC 2232',35,1060.007000,53,45.00,3.90,'open',1,201),(36,'IC 4756',65,1076.314800,500,40.00,4.60,'open',1,NULL),(37,'NGC 2516 (Diamond Cluster)',69,1128.499760,141,30.00,3.80,'open',1,202),(38,'IC 4665',62,1148.069120,43,70.00,4.20,'open',1,203),(39,'Trumpler 10',77,1190.469400,35,14.00,4.60,'open',1,NULL),(40,'NGC 3532 (Wishing Well Cluster)',69,1320.931800,316,50.00,3.00,'open',1,204),(41,'Jewel Box (NGC 4755)',56,6445.000000,14,10.00,4.20,'open',1,205),(42,'Hodge 301',80,167644.000000,25,NULL,11.00,'open',5,206),(43,'NGC 3766 Pearl Cluster',52,5691.422200,NULL,5.00,5.30,'open',1,207),(44,'Mayall II',23,130000.000000,NULL,10.00,13.70,'globular',11,208);
+INSERT INTO `star_cluster` (`star_cluster_id`, `name`, `constellation_id`, `distance_ly`, `age_my`, `diameter_ly`, `brightness`, `cluster_type`, `galaxy_id`, `picture_id`) VALUES (1,'Hyades',11,150.031760,625,330.00,0.50,'open',1,173),(2,'Coma',16,293.540400,400,120.00,1.80,'open',1,174),(3,'Butterfly (M 6)',10,1588.379720,94,20.00,4.20,'open',1,175),(4,'Messier 7',10,913.236800,224,80.00,3.30,'open',1,176),(5,'Wild Duck (M 11)',64,6197.000000,250,13.00,5.80,'open',1,177),(6,'Eagle Nebula (M 16)',65,5871.000000,1,6.00,6.00,'open',1,178),(7,'Messier 18',9,4227.000000,17,5.00,6.90,'open',1,179),(8,'Messier 21',9,3930.000000,12,14.00,5.90,'open',1,180),(9,'Messier 23',9,2048.259680,300,30.00,5.50,'open',1,NULL),(10,'Messier 24',9,10013.000000,220,90.00,4.60,'open',1,NULL),(11,'Messier 25',9,2022.167200,92,30.00,4.60,'open',1,NULL),(12,'Messier 26',64,5218.000000,85,7.00,8.00,'open',1,NULL),(13,'Messier 34',30,1627.518440,180,36.00,5.20,'open',1,181),(14,'Messier 35',5,2974.542720,180,25.00,5.00,'open',1,182),(15,'Messier 36',24,4338.000000,25,10.00,6.00,'open',1,183),(16,'Messier 37',24,4566.000000,347,14.00,5.60,'open',1,184),(17,'Messier 38',24,4566.000000,316,20.00,6.40,'open',1,185),(18,'Messier 39',57,1014.345160,280,30.00,4.60,'open',1,186),(19,'Messier 41',32,2315.707600,240,40.00,4.50,'open',1,187),(20,'Beehive (M 44)',3,521.849600,830,70.00,3.10,'open',1,188),(21,'Pleiades (M 45)',11,440.310600,125,120.00,1.20,'open',1,189),(22,'Messier 46',75,4925.000000,250,20.00,6.10,'open',1,190),(23,'Messier 47',75,1598.164400,73,25.00,4.40,'open',1,191),(24,'Messier 48',59,2511.401200,400,30.00,5.80,'open',1,192),(25,'Messier 50',35,3262.000000,130,14.00,5.90,'open',1,193),(26,'Messier 52',25,4566.000000,160,15.00,6.90,'open',1,194),(27,'Messier 67',3,2961.496480,4000,25.00,6.90,'open',1,195),(28,'Messier 93',75,3382.237720,390,10.00,6.20,'open',1,196),(29,'Messier 103',25,9785.000000,16,5.00,7.40,'open',1,197),(30,'Southern Pleiades (IC 2602)',69,479.449320,30,100.00,1.90,'open',1,198),(31,'IC 2391 (Omicron Velorum Cluster)',77,482.710880,30,60.00,2.50,'open',1,NULL),(32,'NGC 2451 A',75,616.434840,50,45.00,2.80,'open',1,199),(33,'Alpha Persei',30,652.312000,50,300.00,1.20,'open',1,200),(34,'Blanco 1',48,825.174680,100,90.00,4.50,'open',1,NULL),(35,'NGC 2232',35,1060.007000,53,45.00,3.90,'open',1,201),(36,'IC 4756',65,1076.314800,500,40.00,4.60,'open',1,NULL),(37,'NGC 2516 (Diamond Cluster)',69,1128.499760,141,30.00,3.80,'open',1,202),(38,'IC 4665',62,1148.069120,43,70.00,4.20,'open',1,203),(39,'Trumpler 10',77,1190.469400,35,14.00,4.60,'open',1,NULL),(40,'NGC 3532 (Wishing Well Cluster)',69,1320.931800,316,50.00,3.00,'open',1,204),(41,'Jewel Box (NGC 4755)',56,6445.000000,14,10.00,4.20,'open',1,205),(42,'Hodge 301',80,167644.000000,25,NULL,11.00,'open',5,206),(43,'NGC 3766 Pearl Cluster',52,5691.422200,NULL,5.00,5.30,'open',1,207),(44,'Mayall II',23,130000.000000,NULL,10.00,13.70,'globular',11,208);
 /*!40000 ALTER TABLE `star_cluster` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -457,4 +457,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-12-06 19:33:37
+-- Dump completed on 2015-12-09 20:43:00
