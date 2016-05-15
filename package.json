@@ -2,9 +2,9 @@
   "name": "astronomy_website",
   "version": "1.0.0",
   "dependencies": {
-    "express": "^4.10.6",
-    "jquery": "^2.1.4",
-    "mysql": "^2.5.4"
+    "express": "4.13.4",
+    "jquery": "2.2.3",
+    "mysql": "2.10.2"
   },
   "description": "project for our intro to databases class",
   "main": "client.js",
